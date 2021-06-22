@@ -20,6 +20,7 @@ class ArithmeticArranger():
         if self.validProblems == True:
             self.arithmeticArranger()
             finalResult = self.output()
+            print(finalResult)
             return finalResult
         else:
             return None
@@ -54,17 +55,17 @@ class ArithmeticArranger():
 
     def findBiggestLength(self, solution, num1, num2):
         if solution == None:
-            if len(num1) > len(num2):
-                return len(num1)
+            if num1 > num2:
+                return len(str(num1))
             else:
-                return len(num2)
+                return len(str(num2))
         else:
-            if len(solution) > len(num1) and len(solution) > len(num2):
-                return len(solution)
-            elif len(num1) > len(num2):
-                return len(num1)
+            if  solution > num1 and solution > num2:
+                return solution
+            elif num1 > num2:
+                return len(str(num1))
             else:
-                return len(num2)
+                return len(str(num2))
 
     def arrangeTop(self, num1, totalLength, biggestLength):
         if len(num1) == biggestLength:
@@ -105,13 +106,17 @@ class ArithmeticArranger():
             else:
                 solution = None
             biggestLength = self.findBiggestLength(str(solution), self.num1[i], self.num1[i])
-            totalLength = biggestLength + 2
+            totalLength = int(biggestLength) + 2
             self.arrangeTop(self.num1[i], totalLength, biggestLength)
             self.arrangeBottom(self.num2[i], totalLength, biggestLength, self.operands[i])
             self.arrangeSolutionLine(str(solution), totalLength, biggestLength)
             self.createDashLine(totalLength)
+            print(biggestLength)
+            print(totalLength)
     
     def output(self):
+        self.topLine = self.topLine.rstrip()
+        print(len(self.topLine))
         finalResult = self.topLine + "\n" + self.bottomLine + "\n" + self.dashLine
         if self.outSolution == True:
             finalResult += "\n" + self.solutionLine
