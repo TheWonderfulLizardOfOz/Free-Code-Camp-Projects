@@ -3,20 +3,26 @@ class ArithmeticArranger():
     def __init__(self, problems, outSolution = False):
         self.problems = problems
         self.validProblems = True
-        self.errors = {}
+        self.errors = {"manyProblems": False, "incorrectOperator": False,
+                       "incorrectOperand": False, "operandTooBig": False}
         self.num1 = []
         self.num2 = []
-        self.operands = []
+        self.operators = []
         self.totalProblems = len(problems)
+        self.counter = 0
         self.topLine = ""
         self.bottomLine = ""
         self.dashLine = ""
         self.solutionLine = ""
         self.outSolution = outSolution
-        self.individualProblems()
-        self.validator()
 
     def returnResults(self):
+        self.topLine = ""
+        self.bottomLine = ""
+        self.dashLine = ""
+        self.solutionLine = ""
+        self.individualProblems()
+        self.validator()
         if self.validProblems == True:
             self.arithmeticArranger()
             finalResult = self.output()
@@ -26,8 +32,8 @@ class ArithmeticArranger():
             return None
         
     def validator(self):
-        for operand in self.operands:
-            if operand not in ("+", "-"):
+        for operator in self.operators:
+            if operator not in ("+", "-"):
                 self.validProblems = False
         for num in self.num1:
             if num.isdigit() == False:
@@ -41,82 +47,82 @@ class ArithmeticArranger():
             nums = self.numberFinder(problem)
             self.num1.append(nums[0])
             self.num2.append(nums[1])
-            self.operands.append(self.operandFinder(problem))
+            self.operators.append(self.operatorFinder(problem))
             
-    def operandFinder(self, problem):
-        operand = re.findall("[+-]", problem)
-        if len(operand) == 0:
-            operand = "[&]"
-        return str(operand)[2]
+    def operatorFinder(self, problem):
+        operator = re.findall("[+-]", problem)
+        if len(operator) == 0:
+            operator = "[&]"
+        return str(operator)[2].strip()
 
     def numberFinder(self, problem):
         nums = re.findall("[0-9]+", problem)
         return nums
 
-    def findBiggestLength(self, solution, num1, num2):
-        if solution == None:
-            if num1 > num2:
-                return len(str(num1))
-            else:
-                return len(str(num2))
+    def findBiggestLength(self, num1, num2):
+        lnum1 = len(str(num1))
+        lnum2 = len(str(num2))
+        if lnum1 > lnum2:
+            return lnum1
         else:
-            if  solution > num1 and solution > num2:
-                return solution
-            elif num1 > num2:
-                return len(str(num1))
-            else:
-                return len(str(num2))
+            return lnum2
 
     def arrangeTop(self, num1, totalLength, biggestLength):
-        if len(num1) == biggestLength:
-            self.topLine += " " + " " + str(num1) + " "*4
+        if len(str(num1)) == biggestLength:
+            self.topLine += " " + " " + str(num1)
         else:
-            totalToAdd = totalLength - len(num1)
-            self.topLine += " "*totalToAdd
-            self.topLine += str(num1) + " "*4
+            totalToAdd = totalLength - len(str(num1))
+            self.topLine += " "*totalToAdd + str(num1)
+        if self.counter != self.totalProblems:
+            self.topLine += " "*4
 
-    def arrangeBottom(self, num2, totalLength, biggestLength, operand):
-        self.bottomLine += str(operand) + " "
-        if len(num2) != biggestLength:
-            totalToAdd = totalLength - len(num2) - 2
+    def arrangeBottom(self, num2, totalLength, biggestLength, operator):
+        self.bottomLine += str(operator) + " "
+        if len(str(num2)) != biggestLength:
+            totalToAdd = totalLength - len(str(num2)) - 2
             self.bottomLine += " "*totalToAdd
-        self.bottomLine += str(num2) + " "*4
+        self.bottomLine += str(num2)
+        if self.counter != self.totalProblems:
+            self.bottomLine += " "*4
 
     def arrangeSolutionLine(self, solution, totalLength, biggestLength):
         if self.outSolution == False:
             return None
-        if len(solution) == biggestLength:
-            self.solutionLine += " " + " " + str(solution) + " "*4
+        if len(str(solution)) == biggestLength:
+            self.solutionLine += " " + " " + str(solution)
+            if self.counter != self.totalProblems:
+                self.solutionLine += " "*4
         else:
-            totalToAdd = totalLength - len(solution)
+            totalToAdd = totalLength - len(str(solution))
             self.solutionLine += " "*totalToAdd
-            self.solutionLine += str(solution) + " "*4
+            self.solutionLine += str(solution)
+            if self.counter != self.totalProblems:
+                self.solutionLine += " "*4
         
-    def solve(self, num1, num2, operand):
-        solution = eval(str(num1) + str(operand) + str(num2))
+    def solve(self, num1, num2, operator):
+        solution = eval(str(num1) + str(operator) + str(num2))
         return solution
 
     def createDashLine(self, totalLength):
-        self.dashLine += "-"*totalLength + " "*4
+        self.dashLine += "-"*totalLength
+        if self.counter != self.totalProblems:
+            self.dashLine +=" "*4
         
     def arithmeticArranger(self):
-        for i in range(self.totalProblems - 1):
+        for i in range(self.totalProblems):
+            self.counter += 1
             if self.outSolution == True:
-                solution = self.solve(self.num1[i], self.num2[i], self.operands[i])
+                solution = self.solve(self.num1[i], self.num2[i], self.operators[i])
             else:
                 solution = None
-            biggestLength = self.findBiggestLength(str(solution), self.num1[i], self.num1[i])
-            totalLength = int(biggestLength) + 2
+            biggestLength = self.findBiggestLength(self.num1[i], self.num2[i])
+            totalLength = biggestLength + 2
             self.arrangeTop(self.num1[i], totalLength, biggestLength)
-            self.arrangeBottom(self.num2[i], totalLength, biggestLength, self.operands[i])
-            self.arrangeSolutionLine(str(solution), totalLength, biggestLength)
+            self.arrangeBottom(self.num2[i], totalLength, biggestLength, self.operators[i])
+            self.arrangeSolutionLine(solution, totalLength, biggestLength)
             self.createDashLine(totalLength)
-            print(biggestLength)
-            print(totalLength)
     
     def output(self):
-        self.topLine = self.topLine.rstrip()
-        print(len(self.topLine))
         finalResult = self.topLine + "\n" + self.bottomLine + "\n" + self.dashLine
         if self.outSolution == True:
             finalResult += "\n" + self.solutionLine

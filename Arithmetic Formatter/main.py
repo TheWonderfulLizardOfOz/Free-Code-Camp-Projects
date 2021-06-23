@@ -3,7 +3,7 @@ from arithmetic_arranger import ArithmeticArranger
 from unittest import main
 
 arithmeticArranger = ArithmeticArranger(["32 + 698", "3801 - 2", "45 + 43", "123 + 49"])
-print(arithmeticArranger.returnResults)
+arithmeticArranger.returnResults()
 
 
 # Run unit tests automatically
