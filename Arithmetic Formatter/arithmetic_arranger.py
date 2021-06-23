@@ -3,13 +3,14 @@ class ArithmeticArranger():
     def __init__(self, problems, outSolution = False):
         self.problems = problems
         self.validProblems = True
-        self.errors = {"manyProblems": False, "incorrectOperator": False,
-                       "incorrectOperand": False, "operandTooBig": False}
+        self.errors = {"incorrectOperator": False, "incorrectOperand": False,
+                       "operandTooBig": False}
         self.num1 = []
         self.num2 = []
         self.operators = []
         self.totalProblems = len(problems)
         self.counter = 0
+        self.errorCounter = 0
         self.topLine = ""
         self.bottomLine = ""
         self.dashLine = ""
@@ -21,33 +22,57 @@ class ArithmeticArranger():
         self.bottomLine = ""
         self.dashLine = ""
         self.solutionLine = ""
+        self.errorCounter = 0
         self.individualProblems()
-        self.validator()
-        if self.validProblems == True:
+        if self.errorCounter == 0:
             self.arithmeticArranger()
             finalResult = self.output()
-            print(finalResult)
             return finalResult
         else:
-            return None
+            errorMessage = self.errorMessageCreator()
+            return errorMessage
+
+    def errorMessageCreator(self):
+        message = ""
+        if self.totalProblems > 5:
+            return "Error: Too many problems."
+        if self.errors["incorrectOperator"] == True:
+            message += "Error: Operator must be '+' or '-'.\n"
+        if self.errors["incorrectOperand"] == True:
+            message += "Error: Numbers must only contain digits.\n"
+        if self.errors["operandTooBig"] == True:
+            message += "Error: Numbers cannot be more than four digits."
+        message = message.strip("\n")
+        return message
         
-    def validator(self):
-        for operator in self.operators:
-            if operator not in ("+", "-"):
-                self.validProblems = False
-        for num in self.num1:
-            if num.isdigit() == False:
-                self.validProblems = False
-        for num in self.num2:
-            if num.isdigit() == False:
-                self.validProblems = False
-        
+    def validator(self, splitProblem, num1, num2, operator):
+        if operator not in ("+", "-"):
+            self.errors["incorrectOperator"] = True
+            self.errorCounter += 1
+        if num1 != splitProblem[0]:
+            self.errors["incorrectOperand"] = True
+            self.errorCounter += 1
+        if num2 != splitProblem[2]:
+            self.errors["incorrectOperand"] = True
+            self.errorCounter += 1
+        if len(str(num1)) > 4:
+            self.errors["operandTooBig"] = True
+            self.errorCounter += 1
+        if len(str(num2)) > 4:
+            self.errors["operandTooBig"] = True
+            self.errorCounter += 1
+        if self.totalProblems > 5:
+            self.errorCounter += 1
+            
     def individualProblems(self):
         for problem in self.problems:
             nums = self.numberFinder(problem)
             self.num1.append(nums[0])
             self.num2.append(nums[1])
-            self.operators.append(self.operatorFinder(problem))
+            operator = self.operatorFinder(problem)
+            self.operators.append(operator)
+            splitProblem = problem.split()
+            self.validator(splitProblem, nums[0], nums[1], operator)
             
     def operatorFinder(self, problem):
         operator = re.findall("[+-]", problem)
@@ -109,6 +134,7 @@ class ArithmeticArranger():
             self.dashLine +=" "*4
         
     def arithmeticArranger(self):
+        self.counter = 0
         for i in range(self.totalProblems):
             self.counter += 1
             if self.outSolution == True:
@@ -126,5 +152,4 @@ class ArithmeticArranger():
         finalResult = self.topLine + "\n" + self.bottomLine + "\n" + self.dashLine
         if self.outSolution == True:
             finalResult += "\n" + self.solutionLine
-        #print(finalResult)
         return finalResult
