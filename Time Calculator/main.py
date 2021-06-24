@@ -1,9 +1,9 @@
 # This entrypoint file to be used in development. Start by reading README.md
-from time_calculator import add_time
+from time_calculator import AddTime
 from unittest import main
 
-
-print(add_time("11:06 PM", "2:02"))
+addTime = AddTime("11:06 PM", "2:02")
+print(addTime.newTime())
 
 
 # Run unit tests automatically
