@@ -25,17 +25,22 @@ class AddTime():
         return numericalTime
 
     def newTimeCalculator(self, startNumericalTime, durationNumericalTime):
-        totalTime = startNumericalTime + durationNumericalTime
-        days = int(totalTime/(24*60))
-        remainder = totalTime%(24*60)
-        hours = int(remainder/60)
-        minutes = remainder%60
+        totalMinutes = startNumericalTime + durationNumericalTime
+        totalHours = totalMinutes//60
+        days = totalHours//24
+        hours = totalHours - (days*24)
+        minutes = totalMinutes - (totalHours*60)
+##        days = totalTime//(24*60)
+##        remainder = totalTime%(24*60)
+##        hours = remainder//60
+##        minutes = remainder%60
         timeOfDay = self.timeOfDayCalculator(hours)
         if timeOfDay == "PM":
             hours = hours - 12
         return [hours, minutes, timeOfDay, days] 
 
     def timeOfDayCalculator(self, hours):
+        print(hours)
         if hours > 12:
             return "PM"
         else:
