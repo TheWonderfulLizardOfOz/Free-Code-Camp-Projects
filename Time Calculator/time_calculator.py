@@ -33,32 +33,28 @@ class AddTime():
         days = totalHours//24
         hours = totalHours - (days*24)
         minutes = totalMinutes - (totalHours*60)
-##        days = totalTime//(24*60)
-##        remainder = totalTime%(24*60)
-##        hours = remainder//60
-##        minutes = remainder%60
         timeOfDay = self.timeOfDayCalculator(hours)
         if timeOfDay == "PM":
             hours = hours - 12
         return [hours, minutes, timeOfDay, days] 
 
     def timeOfDayCalculator(self, hours):
-        if hours > 12:
+        if hours >= 12:
             return "PM"
         else:
             return "AM"
 
     def messageCreator(self, hours, minutes, timeOfDay, days):
         formattedMinutes = self.formatTime(minutes)
+        hours = self.formatHours(hours)
         message = str(hours) + ":" + formattedMinutes + " " + timeOfDay
-        if self.day == None:
-            if days == 1:
-                message += " (next day)"
-            elif days != 0:
-                message += " (" + str(days) + " days later)"
-            print(message)
-        else:
-            message += " (" + self.dayCalculator(days) + ")"
+        if self.day != None:
+            day = self.dayCalculator(days)
+            message += ", " + day.title()
+        if days == 1:
+            message += " (next day)"
+        elif days != 0:
+            message += " (" + str(days) + " days later)"
         return message
 
     def formatTime(self, time):
@@ -67,10 +63,22 @@ class AddTime():
             time = "0" + time
         return time
 
+    def formatHours(self, hours):
+        if hours == 0:
+            hours = 12
+        return hours
+
     def dayCalculator(self, dayChange):
         dayRemainder = dayChange%7
         dayValue = self.dayValueCalculator(dayChange, dayRemainder)
-        newDay = self.days[dayValue]
+        return dayValue
 
     def dayValueCalculator(self, dayChange, dayRemainder):
-        pass
+        for i in range(len(self.days)):
+            if self.day == self.days[i]:
+                currentDayValue = i
+        total = currentDayValue + dayRemainder
+        if total < 7:
+            return self.days[total]
+        else:
+            return self.days[total - 7]
