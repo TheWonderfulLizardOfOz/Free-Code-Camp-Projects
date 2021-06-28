@@ -3,7 +3,10 @@ class AddTime():
     def __init__(self, start, duration, day = None):
         self.start = start
         self.duration = duration
-        self.day = day
+        if day is not None:
+            self.day = day.upper()
+        else:
+            self.day = day
         self.days = ("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY",
                      "SATURDAY", "SUNDAY")
     
@@ -18,10 +21,10 @@ class AddTime():
         times = re.findall("[0-9]+", time)
         hours = int(times[0])
         minutes = int(times[1])
-        numericalTime = (hours*60) + minutes
         timeOfDay = re.findall("PM", time)
-        if timeOfDay != None:
-            numericalTime += 12*60
+        if timeOfDay == ["PM"]:
+            hours += 12
+        numericalTime = (hours*60) + minutes
         return numericalTime
 
     def newTimeCalculator(self, startNumericalTime, durationNumericalTime):
@@ -40,7 +43,6 @@ class AddTime():
         return [hours, minutes, timeOfDay, days] 
 
     def timeOfDayCalculator(self, hours):
-        print(hours)
         if hours > 12:
             return "PM"
         else:
@@ -49,11 +51,14 @@ class AddTime():
     def messageCreator(self, hours, minutes, timeOfDay, days):
         formattedMinutes = self.formatTime(minutes)
         message = str(hours) + ":" + formattedMinutes + " " + timeOfDay
-        if days == 1:
-            message += " (next day)"
-        elif days != 0:
-            message += " (" + str(days) + " days later)"
-        print(message)
+        if self.day == None:
+            if days == 1:
+                message += " (next day)"
+            elif days != 0:
+                message += " (" + str(days) + " days later)"
+            print(message)
+        else:
+            message += " (" + self.dayCalculator(days) + ")"
         return message
 
     def formatTime(self, time):
@@ -61,3 +66,11 @@ class AddTime():
         if len(time) < 2:
             time = "0" + time
         return time
+
+    def dayCalculator(self, dayChange):
+        dayRemainder = dayChange%7
+        dayValue = self.dayValueCalculator(dayChange, dayRemainder)
+        newDay = self.days[dayValue]
+
+    def dayValueCalculator(self, dayChange, dayRemainder):
+        pass
